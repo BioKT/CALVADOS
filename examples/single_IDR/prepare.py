@@ -13,29 +13,24 @@ cwd = os.getcwd()
 sysname = f'{args.name:s}'
 
 # set the side length of the cubic box
-L = 30
+L = 20
 
 # set the saving interval (number of integration steps)
-N_save = 7000
+N_save = 1000
 
 # set final number of frames to save
 N_frames = 1000
 
 residues_file = f'{cwd}/input/residues_CALVADOS2.csv'
-fasta_file = f'{cwd}/input/fastalib.fasta'
 
 config = Config(
   # GENERAL
   sysname = sysname, # name of simulation system
   box = [L, L, L], # nm
-  temp = 298, # K
+  temp = 293, # K
   ionic = 0.15, # molar
-  pH = 7.0,
+  pH = 7.0, # 7.5
   topol = 'center',
-
-  # INPUT
-  fresidues = residues_file, # residue definitions
-  ffasta = fasta_file, # domain definitions (harmonic restraints)
 
   # RUNTIME SETTINGS
   wfreq = N_save, # dcd writing interval, 1 = 10 fs
@@ -45,21 +40,17 @@ config = Config(
   restart = 'checkpoint',
   frestart = 'restart.chk',
   verbose = True,
-
-  # JOB SETTINGS (ignore if running locally)
-  submit = False
 )
 
 # PATH
 path = f'{cwd}/{sysname:s}'
 subprocess.run(f'mkdir -p {path}',shell=True)
-subprocess.run(f'mkdir -p data',shell=True)
 
 analyses = f"""
 
 from calvados.analysis import save_rg
 
-save_rg("{path:s}","{sysname:s}","{residues_file:s}","data",10)
+save_rg("{path:s}","{sysname:s}","{residues_file:s}",".",10)
 """
 
 config.write(path,name='config.yaml',analyses=analyses)
@@ -68,10 +59,15 @@ components = Components(
   # Defaults
   molecule_type = 'protein',
   nmol = 1, # number of molecules
-  restraint = True, # apply restraints
-  charge_termini = 'both', # options: 'N', 'C', 'both' or 'none'
+  restraint = False, # apply restraints
+  charge_termini = 'both', # charge N or C or both
+
+  # INPUT
+  fresidues = residues_file, # residue definitions
+  ffasta = f'{cwd}/input/idr.fasta', # residue definitions
 )
-components.add(name=sysname, restraint=False)
+
+components.add(name=args.name)
 
 components.write(path,name='components.yaml')
 

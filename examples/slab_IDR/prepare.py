@@ -23,11 +23,6 @@ config = Config(
   ionic = 0.1, # molar
   pH = 7.5,
   topol = 'slab',
-  friction_coeff = 0.001,
-
-  # INPUT
-  ffasta = f'{cwd}/input/fastalib.fasta', # input fasta file
-  fresidues = f'{cwd}/input/residues_CALVADOS2.csv', # residue definitions
 
   # RUNTIME SETTINGS
   wfreq = N_save, # dcd writing frequency, 1 = 10fs
@@ -50,7 +45,7 @@ analyses = f"""
 
 from calvados.analysis import calc_slab_profiles
 
-calc_slab_profiles("{path:s}","{sysname:s}","all",["all"],"data",0)
+calc_slab_profiles(path="{path:s}",name="{sysname:s}",output_folder="data",ref_atoms="all",start=0)
 """
 
 config.write(path,name='config.yaml',analyses=analyses)
@@ -61,6 +56,10 @@ components = Components(
   nmol = 1, # number of molecules
   restraint = False, # apply restraints
   charge_termini = 'both', # charge N or C or both or none
+  
+  # INPUT
+  ffasta = f'{cwd}/input/fastalib.fasta', # input fasta file
+  fresidues = f'{cwd}/input/residues_CALVADOS2.csv', # residue definitions
 )
 
 components.add(name=args.name, nmol=100)

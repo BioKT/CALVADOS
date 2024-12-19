@@ -2,10 +2,11 @@
 [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/KULL-Centre/_2023_Tesei_IDRome/blob/main/IDRLab.ipynb)
 [![CALVADOS Video](http://img.shields.io/badge/►-Video-FF0000.svg)](https://youtu.be/r-eFzoBiQZ4)
 [![IDRome Video](http://img.shields.io/badge/►-Video-FF0000.svg)](https://youtu.be/kL3-cusHgzM)
+[![Python application](https://github.com/KULL-Centre/CALVADOS/actions/workflows/python-app.yml/badge.svg)](https://github.com/KULL-Centre/CALVADOS/actions/workflows/python-app.yml)
 
 # CALVADOS
 
-Coarse-grained implicit-solvent simulations of biomolecules in the openMM framework.
+Coarse-grained implicit-solvent simulations of biomolecules in the OpenMM framework.
 Earlier implementations of the code are available on [Zenodo](https://zenodo.org/search?q=metadata.subjects.subject%3A%22CALVADOS%22&l=list&p=1&s=10&sort=bestmatch) ([DOI: 10.5281/zenodo.13754000](https://doi.org/10.5281/zenodo.13754000)).
 
 Please cite the following references when using the software:
@@ -21,11 +22,9 @@ Please cite the following references when using the software:
 conda create -n calvados python=3.10
 conda activate calvados
 ```
-2. Install numba, mdtraj with conda and openmm (they have caused issues with pip install)
+(2. Only needed when planning to use GPUs: Install openmm via conda-force with cudatoolkit. This step can be skipped if running on CPU only.)
 ```
-conda install numba
-conda install -c conda-forge mdtraj
-conda install -c conda-forge openmm cudatoolkit=11.2
+conda install -c conda-forge openmm=8.2.0 cudatoolkit=11.8
 ```
 3. Clone package and install CALVADOS and its dependencies using pip
 ``` 
@@ -34,10 +33,14 @@ cd CALVADOS
 pip install .
 (or pip install -e .)
 ```
-4. Clean up faulty pip install of scipy:
+
+## Testing
+
+```bash
+
+  python -m pytest
 ```
-conda install scipy
-```
+The test `test_ah_dh_interactions` simulates two free amino acids, calculates the potential energies based on the saved trajectory and compares these values with those in the OpenMM log file.
 
 ## Contact
 
@@ -51,6 +54,8 @@ For further questions and inquiries, please contact us.
 [Giulio Tesei (@gitesei)](https://github.com/gitesei)
 
 [Fan Cao (@fancaoErik)](https://github.com/fancaoErik)
+
+[Ikki Yasuda (@iyasuda)](https://github.com/iyasuda)
 
 [Kresten Lindorff-Larsen (@lindorff-larsen)](https://github.com/lindorff-larsen)
 
