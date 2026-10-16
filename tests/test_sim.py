@@ -1,9 +1,14 @@
+from pathlib import Path
 from types import SimpleNamespace
 
 import openmm
 import pytest
 
+from calvados.cfg import Components, Config
 from calvados.sim import Sim, _split_steps
+
+
+TEST_DATA = Path(__file__).parent / "data"
 
 
 @pytest.mark.parametrize("steps", [1, 7, 10, 11, 105])
@@ -61,5 +66,29 @@ def test_adds_requested_barostat(
 
     assert any(
         isinstance(force, barostat_type)
+        for force in simulation.system.getForces()
+    )
+
+
+def test_builds_slab_system(tmp_path: Path) -> None:
+    """A slab topology should build: solutes are counted and placed on the slab grid."""
+    components = Components(
+        fresidues=str(TEST_DATA / "residues_CALVADOS2.csv"),
+        ffasta=str(TEST_DATA / "fastalib.fasta"),
+        restraint=False,
+    )
+    components.add(name="cres_test", nmol=4)
+    config = Config(
+        box=[5, 5, 20], temp=293.15, ionic=0.15, pH=7.0,
+        topol="slab", slab_width=10, slab_eq=True,
+    )
+    simulation = Sim(tmp_path, config.config, components.components)
+
+    simulation.build_system()
+
+    assert simulation.nsolutes == 4
+    assert simulation.system.getNumParticles() == 40
+    assert any(
+        isinstance(force, openmm.CustomExternalForce)
         for force in simulation.system.getForces()
     )
