@@ -520,10 +520,8 @@ class Sim:
             else:
                 pdb = app.pdbxfile.PDBxFile(self.cif_cg)
         elif self.restart == 'checkpoint':
-            if os.path.isfile(fcheck_in):
-                pdb = app.pdbxfile.PDBxFile(fcheck_in)
-            else:
-                pdb = app.pdbxfile.PDBxFile(self.cif_cg)
+            # topology only: positions/velocities come from loadCheckpoint (restart.chk is binary)
+            pdb = app.pdbxfile.PDBxFile(self.cif_cg)
         else:
             pdb = app.pdbxfile.PDBxFile(self.cif_cg)
 
